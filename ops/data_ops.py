@@ -363,3 +363,22 @@ def center_crop(x, crop_h, crop_w,
   i = int(round((w - crop_w)/2.))
   return misc.imresize(
       x[j:j+crop_h, i:i+crop_w], [resize_h, resize_w])
+
+def save_images(images, size, image_path):
+    return imsave(inverse_transform(images), size, image_path)
+
+def imsave(images, size, path):
+    image = np.squeeze(merge(images, size))
+    return misc.imsave(path, image)
+
+def merge(images, size):
+    h, w = images.shape[1], images.shape[2]
+    img = np.zeros((h * size[0], w * size[1], 3))
+    for idx, image in enumerate(images):
+        i = idx % size[1]
+        j = idx // size[1]
+        img[j * h:j * h + h, i * w: i * w + w, :] = image
+    return img
+
+def inverse_transform(image):
+    return (image + 1.) / 2.

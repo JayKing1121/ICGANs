@@ -23,16 +23,16 @@ from nets import *
 if __name__ == '__main__':
 
    parser = argparse.ArgumentParser()
-   parser.add_argument('--loss',       required=False,help='Type of GAN loss to use', type=str,default='wgan')
-   parser.add_argument('--dataset',    required=False,help='The DATASET to use',      type=str,default='celeba')
-   parser.add_argument('--data_dir',   required=False,help='Directory where data is', type=str,default='./data/')
-   parser.add_argument('--image_dir',  required=False,help='Directory where image is',type=str,default='./samples/')
-   parser.add_argument('--log_dir',    required=False,help='Directory where logs is', type=str,default='./logs/')
+   parser.add_argument('--loss',          required=False,help='Type of GAN loss to use', type=str,default='wgan')
+   parser.add_argument('--dataset',       required=False,help='The DATASET to use',      type=str,default='celeba')
+   parser.add_argument('--data_dir',      required=False,help='Directory where data is', type=str,default='./data/')
+   parser.add_argument('--image_dir',     required=False,help='Directory where image is',type=str,default='./samples/')
+   parser.add_argument('--log_dir',       required=False,help='Directory where logs is', type=str,default='./logs/')
    parser.add_argument('--checkpoint_dir',required=False,help='Directory where checkpoint is', type=str,default='./checkpoint/')
-   parser.add_argument('--epochs',     required=False,help='Maximum training steps',  type=int,default=25)
-   parser.add_argument('--batch_size', required=False,help='Batch size',              type=int,default=64)
-   parser.add_argument('--dist',       required=False,help='Distribution to use',     type=str,default='normal')
-   parser.add_argument('--match',      required=False,help='Match discriminator',     type=int,default=0)
+   parser.add_argument('--epochs',        required=False,help='Maximum training steps',  type=int,default=25)
+   parser.add_argument('--batch_size',    required=False,help='Batch size',              type=int,default=64)
+   parser.add_argument('--dist',          required=False,help='Distribution to use',     type=str,default='normal')
+   parser.add_argument('--match',         required=False,help='Match discriminator',     type=int,default=0)
    a = parser.parse_args()
 
    LOSS           = a.loss
@@ -284,6 +284,7 @@ if __name__ == '__main__':
             gen_imgs = np.squeeze(np.asarray(sess.run([gen_images],
                                     feed_dict={z:batch_z, y:batch_y, real_images:batch_images})))
 
+         save_images(gen_imgs[0:64] , [8, 8], '{}train_{:02d}_{:04d}.png'.format(IMAGES_DIR, epoch_num, step))
          num = 0
          for img,atr in zip(gen_imgs, batch_y):
             img = (img+1.)
