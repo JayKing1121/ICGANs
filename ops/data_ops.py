@@ -220,24 +220,6 @@ def load_fashion(data_dir):
    mode can be train/test/val
 '''
 def load_celeba(data_dir, mode='train'):
-
-   train_ids = []
-   test_ids  = []
-   val_ids   = []
-   
-   with open(data_dir+'list_eval_partition.txt', 'r') as f:
-      for line in f:
-         line = line.rstrip().split()
-         img = line[0]
-         id_ = int(line[1])
-         if id_ == 0: train_ids.append(img)
-         if id_ == 1: test_ids.append(img)
-         if id_ == 2: val_ids.append(img)
-   
-   len_train = len(train_ids)
-   len_test  = len(test_ids)
-   len_val   = len(val_ids)
-
    # load up annotations
    '''
       0  5_o_Clock_Shadow
@@ -286,7 +268,6 @@ def load_celeba(data_dir, mode='train'):
    '''
    dum = 0
    train_image_attr = {}
-   test_image_attr  = {}
    i = 0
    print 'Loading attributes...'
    with open(data_dir+'list_attr_celeba.txt', 'r') as f:
@@ -296,25 +277,15 @@ def load_celeba(data_dir, mode='train'):
             dum += 1
             continue
          image_id = line[0]
-         if image_id in train_ids or image_id in val_ids:
-            attr = line[1:]
-            #attr = np.asarray(list(attr[x] for x in [4,5,8,9,11,15,16,17,18,20,22,24,31,35,37]), dtype=np.float32)
-            attr = np.asarray(list(attr[x] for x in [ 4, 5, 8, 9, 15, 18, 20, 26, 31]), dtype=np.float32)
-            attr = np.asarray([0 if x == -1 else 1 for x in attr])
-            train_image_attr[data_dir+'img_align_celeba_cropped/'+image_id] = attr
-         if image_id in test_ids:
-            attr = line[1:]
-            attr = np.asarray(list(attr[x] for x in [4, 5, 8, 9, 15, 18, 20, 26, 31]), dtype=np.float32)
-            attr = np.asarray([0 if x == -1 else 1 for x in attr])
-            test_image_attr[data_dir+'img_align_celeba_cropped/'+image_id] = attr
+         attr = line[1:]
+         attr = np.asarray(list(attr[x] for x in [ 4, 5, 8, 9, 15, 18, 20, 26, 31]), dtype=np.float32)
+         attr = np.asarray([0 if x == -1 else 1 for x in attr])
+         train_image_attr[data_dir+'img_align_celeba/'+image_id] = attr
 
          i += 1
-         #if i == 70: break
 
    train_images = train_image_attr.keys()
    train_attrs  = train_image_attr.values()
-   test_images  = test_image_attr.keys()
-   test_attrs   = test_image_attr.values()
    '''
    if mode == 'train':
       train_images = train_image_attr.keys()
@@ -326,7 +297,7 @@ def load_celeba(data_dir, mode='train'):
       test_attrs  = test_image_attr.values()
       return np.asarray(test_images), np.asarray(test_attrs)
    '''
-   return np.asarray(train_images), np.asarray(train_attrs), np.asarray(test_images), np.asarray(test_attrs)
+   return np.asarray(train_images), np.asarray(train_attrs)
 
 def normalize(image):
    return (image/127.5)-1.0

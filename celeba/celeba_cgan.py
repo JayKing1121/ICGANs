@@ -161,13 +161,14 @@ if __name__ == '__main__':
    step = sess.run(global_step)
 
    print 'Loading data...'
-   images, annots, test_images, test_annots = data_ops.load_celeba(DATA_DIR)
+   #images, annots, test_images, test_annots = data_ops.load_celeba(DATA_DIR)
+   images, annots = data_ops.load_celeba(DATA_DIR)
 
    train_len = len(annots)
-   test_len  = len(test_annots)
+   #test_len  = len(test_annots)
 
    print 'train num:',train_len
-   print 'test num:',test_len
+   #print 'test num:',test_len
    
    epoch_num = step/(train_len/BATCH_SIZE)
    
@@ -229,6 +230,7 @@ if __name__ == '__main__':
          saver.save(sess, CHECKPOINT_DIR+'checkpoint-'+str(step))
          saver.export_meta_graph(CHECKPOINT_DIR+'checkpoint-'+str(step)+'.meta')
 
+         '''
          idx          = np.random.choice(np.arange(test_len), BATCH_SIZE, replace=False)
          batch_z      = np.random.normal(0.0, 1.0, size=[BATCH_SIZE, 100]).astype(np.float32)
          batch_y      = test_annots[idx]
@@ -240,7 +242,7 @@ if __name__ == '__main__':
          batch_y      = annots[idx]
          batch_img    = images[idx]
          batch_images = np.empty((BATCH_SIZE, 64, 64, 3), dtype=np.float32)
-         '''
+         
 
          i = 0
          for img in batch_img:
