@@ -142,7 +142,9 @@ if __name__ == '__main__':
 
    saver = tf.train.Saver(max_to_keep=1)
    init = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
-   sess  = tf.Session()
+   run_config = tf.ConfigProto()
+   run_config.gpu_options.allow_growth=True
+   sess  = tf.Session(config=run_config)
    sess.run(init)
 
    # write losses to tf summary to view in tensorboard
