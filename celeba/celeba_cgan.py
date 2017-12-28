@@ -25,7 +25,7 @@ if __name__ == '__main__':
    parser = argparse.ArgumentParser()
    parser.add_argument('--LOSS',       required=False,help='Type of GAN loss to use', type=str,default='wgan')
    parser.add_argument('--DATASET',    required=False,help='The DATASET to use',      type=str,default='celeba')
-   parser.add_argument('--DATA_DIR',   required=False,help='Directory where data is', type=str,default='./')
+   parser.add_argument('--DATA_DIR',   required=False,help='Directory where data is', type=str,default='./data/')
    parser.add_argument('--EPOCHS',     required=False,help='Maximum training steps',  type=int,default=25)
    parser.add_argument('--BATCH_SIZE', required=False,help='Batch size',              type=int,default=64)
    parser.add_argument('--DIST',       required=False,help='Distribution to use',     type=str,default='normal')
