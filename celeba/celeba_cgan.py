@@ -284,7 +284,7 @@ if __name__ == '__main__':
             gen_imgs = np.squeeze(np.asarray(sess.run([gen_images],
                                     feed_dict={z:batch_z, y:batch_y, real_images:batch_images})))
 
-         save_images(gen_imgs[0:64] , [8, 8], '{}train_{:02d}_{:04d}.png'.format(IMAGES_DIR, epoch_num, step))
+         data_ops.save_images(gen_imgs[0:64] , [8, 8], '{}train_{:02d}_{:04d}.png'.format(IMAGES_DIR, epoch_num, step))
          num = 0
          for img,atr in zip(gen_imgs, batch_y):
             img = (img+1.)
