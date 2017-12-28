@@ -182,6 +182,11 @@ if __name__ == '__main__':
    #print 'test num:',test_len
    
    epoch_num = step/(train_len/BATCH_SIZE)
+
+   sample_y     = data_ops.sample_label(BATCH_SIZE, Y_DIM, 0.0, 1.0)
+   sample_z     = np.random.normal(0.0, 1.0, size=[BATCH_SIZE, 100]).astype(np.float32)
+   for i in range(min(BATCH_SIZE, Y_DIM)):
+      sample_z[i] = sample_z[0]
    
    while epoch_num < EPOCHS:
       epoch_num = step/(train_len/BATCH_SIZE)
@@ -245,44 +250,19 @@ if __name__ == '__main__':
       print 'epoch:',epoch_num,'step:',step,'D loss:',D_loss,'G_loss:',G_loss,'time:',time.time()-start
       step += 1
     
-      if step%10 == 0:
+      if step%1 == 0:
          print 'Saving model...'
          saver.save(sess, CHECKPOINT_DIR+'checkpoint-'+str(step))
          saver.export_meta_graph(CHECKPOINT_DIR+'checkpoint-'+str(step)+'.meta')
 
-         '''
-         idx          = np.random.choice(np.arange(test_len), BATCH_SIZE, replace=False)
-         batch_z      = np.random.normal(0.0, 1.0, size=[BATCH_SIZE, 100]).astype(np.float32)
-         batch_y      = test_annots[idx]
-         batch_img    = test_images[idx]
-         batch_images = np.empty((BATCH_SIZE, 64, 64, 3), dtype=np.float32)
-         '''
-         idx          = np.random.choice(np.arange(train_len), BATCH_SIZE, replace=False)
-         batch_z      = np.random.normal(0.0, 1.0, size=[BATCH_SIZE, 100]).astype(np.float32)
-         batch_y      = annots[idx]
-         batch_img    = images[idx]
-         batch_images = [data_ops.get_image(img,108,108,64,64,True,False) for img in batch_img]
-         batch_images = np.array(batch_images).astype(np.float32)
-
-         '''
-         batch_images = np.empty((BATCH_SIZE, 64, 64, 3), dtype=np.float32)
-         
-
-         i = 0
-         for img in batch_img:
-            img = data_ops.normalize(misc.imread(img))
-            batch_images[i, ...] = img
-            i+=1
-         '''
-
          if MATCH == True:
-            batch_fy = 1-batch_y
+            sample_fy = 1-sample_y
             # comes out as (1, batch, 64, 64, 3), so squeezing it
             gen_imgs = np.squeeze(np.asarray(sess.run([gen_images],
-                                    feed_dict={z:batch_z, y:batch_y, fy:batch_fy,real_images:batch_images})))
+                                    feed_dict={z:sample_z, y:sample_y, fy:sample_fy})))
          else:
             gen_imgs = np.squeeze(np.asarray(sess.run([gen_images],
-                                    feed_dict={z:batch_z, y:batch_y, real_images:batch_images})))
+                                    feed_dict={z:sample_z, y:sample_y})))
 
          data_ops.save_images(gen_imgs[0:64] , [8, 8], '{}train_{:02d}_{:04d}.png'.format(IMAGES_DIR, epoch_num, step))
          num = 0

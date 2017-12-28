@@ -382,3 +382,11 @@ def merge(images, size):
 
 def inverse_transform(image):
     return (image + 1.) / 2.
+
+def sample_label(batch_size, y_dim, y_min, y_max):
+    num = batch_size
+    label_vector = np.zeros((batch_size, y_dim), dtype=np.float) + y_min
+    for i in range(0 , batch_size):
+      label_vector[i , i%y_dim] = y_max
+
+    return label_vector
