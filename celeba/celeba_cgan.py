@@ -42,6 +42,9 @@ if __name__ == '__main__':
 
    CHECKPOINT_DIR = 'checkpoints/gan/DATASET_'+DATASET+'/LOSS_'+LOSS+'/DIST_'+str(DIST)+'/MATCH_'+str(MATCH)+'/'
    IMAGES_DIR     = CHECKPOINT_DIR+'images/'
+   FILTERS        = [4, 5, 8, 9, 15, 18, 20, 26, 31]
+   Y_DIM          = len(FILTERS)
+
 
    try: os.makedirs(IMAGES_DIR)
    except: pass
@@ -50,8 +53,8 @@ if __name__ == '__main__':
    global_step = tf.Variable(0, name='global_step', trainable=False)
    real_images = tf.placeholder(tf.float32, shape=(BATCH_SIZE, 64, 64, 3), name='real_images')
    z           = tf.placeholder(tf.float32, shape=(BATCH_SIZE, 100), name='z')
-   y           = tf.placeholder(tf.float32, shape=(BATCH_SIZE, 9), name='y')
-   fy          = tf.placeholder(tf.float32, shape=(BATCH_SIZE, 9), name='fy')
+   y           = tf.placeholder(tf.float32, shape=(BATCH_SIZE, Y_DIM), name='y')
+   fy          = tf.placeholder(tf.float32, shape=(BATCH_SIZE, Y_DIM), name='fy')
 
    # generated images
    gen_images = netG(z, y, BATCH_SIZE)
@@ -162,7 +165,7 @@ if __name__ == '__main__':
 
    print 'Loading data...'
    #images, annots, test_images, test_annots = data_ops.load_celeba(DATA_DIR)
-   images, annots = data_ops.load_celeba(DATA_DIR)
+   images, annots = data_ops.load_celeba(data_dir=DATA_DIR, filters=FILTERS)
 
    train_len = len(annots)
    #test_len  = len(test_annots)
@@ -182,13 +185,17 @@ if __name__ == '__main__':
          batch_z      = np.random.normal(0.0, 1.0, size=[BATCH_SIZE, 100]).astype(np.float32)
          batch_y      = annots[idx]
          batch_img    = images[idx]
+         batch_images = [data_ops.get_image(img,108,108,64,64,True,False) for img in batch_img]
+         batch_images = np.array(batch_images).astype(np.float32)
 
+         '''
          batch_images = np.empty((BATCH_SIZE, 64, 64, 3), dtype=np.float32)
          i = 0
          for img in batch_img:
             img = data_ops.normalize(misc.imread(img))
             batch_images[i, ...] = img
             i+=1
+         '''
 
          if MATCH == True:
             batch_fy = 1-batch_y
@@ -201,13 +208,18 @@ if __name__ == '__main__':
       batch_z      = np.random.normal(0.0, 1.0, size=[BATCH_SIZE, 100]).astype(np.float32)
       batch_y      = annots[idx]
       batch_img    = images[idx]
+      batch_images = [data_ops.get_image(img,108,108,64,64,True,False) for img in batch_img]
+      batch_images = np.array(batch_images).astype(np.float32)
+      '''
       batch_images = np.empty((BATCH_SIZE, 64, 64, 3), dtype=np.float32)
+      
       
       i = 0
       for img in batch_img:
          img = data_ops.normalize(misc.imread(img))
          batch_images[i, ...] = img
          i+=1
+      '''
 
       if MATCH == True:
          batch_fy = 1-batch_y
@@ -241,6 +253,10 @@ if __name__ == '__main__':
          batch_z      = np.random.normal(0.0, 1.0, size=[BATCH_SIZE, 100]).astype(np.float32)
          batch_y      = annots[idx]
          batch_img    = images[idx]
+         batch_images = [data_ops.get_image(img,108,108,64,64,True,False) for img in batch_img]
+         batch_images = np.array(batch_images).astype(np.float32)
+
+         '''
          batch_images = np.empty((BATCH_SIZE, 64, 64, 3), dtype=np.float32)
          
 
@@ -249,6 +265,7 @@ if __name__ == '__main__':
             img = data_ops.normalize(misc.imread(img))
             batch_images[i, ...] = img
             i+=1
+         '''
 
          if MATCH == True:
             batch_fy = 1-batch_y

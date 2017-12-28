@@ -219,7 +219,7 @@ def load_fashion(data_dir):
 '''
    mode can be train/test/val
 '''
-def load_celeba(data_dir, mode='train'):
+def load_celeba(data_dir, mode='train', filters=[4, 5, 8, 9, 15, 18, 20, 26, 31]):
    # load up annotations
    '''
       0  5_o_Clock_Shadow
@@ -278,7 +278,7 @@ def load_celeba(data_dir, mode='train'):
             continue
          image_id = line[0]
          attr = line[1:]
-         attr = np.asarray(list(attr[x] for x in [ 4, 5, 8, 9, 15, 18, 20, 26, 31]), dtype=np.float32)
+         attr = np.asarray(list(attr[x] for x in filters), dtype=np.float32)
          attr = np.asarray([0 if x == -1 else 1 for x in attr])
          train_image_attr[data_dir+'img_align_celeba/'+image_id] = attr
 
@@ -330,3 +330,36 @@ def batch_deprocess(images):
 def batch_preprocess(images):
    with tf.name_scope('batch_preprocess'):
       return tf.map_fn(preprocess, images, dtype=tf.float32)
+
+def get_image(image_path, input_height, input_width,
+              resize_height=64, resize_width=64,
+              crop=True, grayscale=False):
+  image = imread(image_path, grayscale)
+  return transform(image, input_height, input_width,
+                   resize_height, resize_width, crop)
+
+def imread(path, is_grayscale=False):
+    if (is_grayscale):
+        return misc.imread(path, flatten=True).astype(np.float)
+    else:
+        return misc.imread(path).astype(np.float)
+
+def transform(image, input_height, input_width, 
+              resize_height=64, resize_width=64, crop=True):
+  if crop:
+    cropped_image = center_crop(
+      image, input_height, input_width, 
+      resize_height, resize_width)
+  else:
+    cropped_image = misc.imresize(image, [resize_height, resize_width])
+  return np.array(cropped_image)/127.5 - 1.
+
+def center_crop(x, crop_h, crop_w,
+                resize_h=64, resize_w=64):
+  if crop_w is None:
+    crop_w = crop_h
+  h, w = x.shape[:2]
+  j = int(round((h - crop_h)/2.))
+  i = int(round((w - crop_w)/2.))
+  return misc.imresize(
+      x[j:j+crop_h, i:i+crop_w], [resize_h, resize_w])
