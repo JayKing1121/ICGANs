@@ -23,30 +23,38 @@ from nets import *
 if __name__ == '__main__':
 
    parser = argparse.ArgumentParser()
-   parser.add_argument('--LOSS',       required=False,help='Type of GAN loss to use', type=str,default='wgan')
-   parser.add_argument('--DATASET',    required=False,help='The DATASET to use',      type=str,default='celeba')
-   parser.add_argument('--DATA_DIR',   required=False,help='Directory where data is', type=str,default='./data/')
-   parser.add_argument('--EPOCHS',     required=False,help='Maximum training steps',  type=int,default=25)
-   parser.add_argument('--BATCH_SIZE', required=False,help='Batch size',              type=int,default=64)
-   parser.add_argument('--DIST',       required=False,help='Distribution to use',     type=str,default='normal')
-   parser.add_argument('--MATCH',      required=False,help='Match discriminator',     type=int,default=0)
+   parser.add_argument('--loss',       required=False,help='Type of GAN loss to use', type=str,default='wgan')
+   parser.add_argument('--dataset',    required=False,help='The DATASET to use',      type=str,default='celeba')
+   parser.add_argument('--data_dir',   required=False,help='Directory where data is', type=str,default='./data/')
+   parser.add_argument('--image_dir',  required=False,help='Directory where image is',type=str,default='./samples/')
+   parser.add_argument('--log_dir',    required=False,help='Directory where logs is', type=str,default='./logs/')
+   parser.add_argument('--checkpoint_dir',required=False,help='Directory where checkpoint is', type=str,default='./checkpoint/')
+   parser.add_argument('--epochs',     required=False,help='Maximum training steps',  type=int,default=25)
+   parser.add_argument('--batch_size', required=False,help='Batch size',              type=int,default=64)
+   parser.add_argument('--dist',       required=False,help='Distribution to use',     type=str,default='normal')
+   parser.add_argument('--match',      required=False,help='Match discriminator',     type=int,default=0)
    a = parser.parse_args()
 
-   LOSS           = a.LOSS
-   DIST           = a.DIST
-   MATCH          = bool(a.MATCH)
-   EPOCHS         = a.EPOCHS
-   DATASET        = a.DATASET
-   DATA_DIR       = a.DATA_DIR
-   BATCH_SIZE     = a.BATCH_SIZE
+   LOSS           = a.loss
+   DIST           = a.dist
+   MATCH          = bool(a.match)
+   EPOCHS         = a.epochs
+   DATASET        = a.dataset
+   DATA_DIR       = a.data_dir
+   IMAGES_DIR     = a.image_dir
+   LOG_DIR        = a.log_dir
+   BATCH_SIZE     = a.batch_size
+   CHECKPOINT_DIR = a.checkpoint_dir
 
-   CHECKPOINT_DIR = 'checkpoints/gan/DATASET_'+DATASET+'/LOSS_'+LOSS+'/DIST_'+str(DIST)+'/MATCH_'+str(MATCH)+'/'
-   IMAGES_DIR     = CHECKPOINT_DIR+'images/'
    FILTERS        = [4, 5, 8, 9, 15, 18, 20, 26, 31]
    Y_DIM          = len(FILTERS)
 
 
    try: os.makedirs(IMAGES_DIR)
+   except: pass
+   try: os.makedirs(LOG_DIR)
+   except: pass
+   try: os.makedirs(CHECKPOINT_DIR)
    except: pass
 
    # placeholders for data going into the network
@@ -143,7 +151,7 @@ if __name__ == '__main__':
    try: tf.summary.scalar('g_loss', tf.reduce_mean(errG))
    except:pass
 
-   summary_writer = tf.summary.FileWriter(CHECKPOINT_DIR+'/'+'logs/', graph=tf.get_default_graph())
+   summary_writer = tf.summary.FileWriter(LOG_DIR, graph=tf.get_default_graph())
 
    tf.add_to_collection('G_train_op', G_train_op)
    tf.add_to_collection('D_train_op', D_train_op)
